@@ -17,7 +17,7 @@ GMAIL_PASSWORD = os.getenv('GMAIL_PASSWORD')
 GOOGLE_CREDENTIALS = os.getenv('GOOGLE_CREDENTIALS')
 GOOGLE_SHEET_ID = os.getenv('GOOGLE_SHEET_ID')
 
-def log_to_sheets(name, email, phone, date, duration, message):
+def log_to_sheets(name, email):
     scopes = [
         'https://www.googleapis.com/auth/spreadsheets',
         'https://www.googleapis.com/auth/drive'
@@ -26,27 +26,20 @@ def log_to_sheets(name, email, phone, date, duration, message):
     client = gspread.authorize(creds)
     sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    sheet.append_row([name, email, phone, date, duration, message, timestamp])
+    sheet.append_row([name, email, timestamp])
 
-def send_email(name, email, phone, date, duration, message):
+def send_email(name, email):
     msg = MIMEMultipart()
     msg['From'] = GMAIL_USER
     msg['To'] = GMAIL_USER
-    msg['Subject'] = f"New UrbanLine Booking Request from {name}"
-
+    msg['Subject'] = f"New UrbanLine Waitlist Signup — {name}"
     body = f"""
-New booking request received:
+New waitlist signup:
 
 Name: {name}
 Email: {email}
-Phone: {phone}
-Date: {date}
-Duration: {duration}
-Message: {message}
     """
-
     msg.attach(MIMEText(body, 'plain'))
-
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
         server.login(GMAIL_USER, GMAIL_PASSWORD)
         server.sendmail(GMAIL_USER, GMAIL_USER, msg.as_string())
@@ -59,15 +52,9 @@ def home():
 def book():
     name = request.form['name']
     email = request.form['email']
-    phone = request.form['phone']
-    date = request.form['date']
-    duration = request.form['duration']
-    message = request.form.get('message', '')
-
-    send_email(name, email, phone, date, duration, message)
-    log_to_sheets(name, email, phone, date, duration, message)
-
-    return "Thanks for your request! We will be in touch shortly."
+    send_email(name, email)
+    log_to_sheets(name, email)
+    return "You are on the list! We will be in touch when we launch."
 
 if __name__ == '__main__':
     app.run(debug=True)
