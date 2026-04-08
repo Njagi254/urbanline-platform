@@ -1,6 +1,39 @@
+import smtplib
+import os
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from flask import Flask, render_template, request
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
+
+GMAIL_USER = os.getenv('GMAIL_USER')
+GMAIL_PASSWORD = os.getenv('GMAIL_PASSWORD')
+
+def send_email(name, email, phone, date, duration, message):
+    msg = MIMEMultipart()
+    msg['From'] = GMAIL_USER
+    msg['To'] = GMAIL_USER
+    msg['Subject'] = f"New UrbanLine Booking Request from {name}"
+
+    body = f"""
+New booking request received:
+
+Name: {name}
+Email: {email}
+Phone: {phone}
+Date: {date}
+Duration: {duration}
+Message: {message}
+    """
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(GMAIL_USER, GMAIL_PASSWORD)
+        server.sendmail(GMAIL_USER, GMAIL_USER, msg.as_string())
 
 @app.route('/')
 def home():
@@ -15,10 +48,7 @@ def book():
     duration = request.form['duration']
     message = request.form.get('message', '')
 
-    print(f"New booking request from {name}")
-    print(f"Email: {email} | Phone: {phone}")
-    print(f"Date: {date} | Duration: {duration}")
-    print(f"Message: {message}")
+    send_email(name, email, phone, date, duration, message)
 
     return "Thanks for your request! We will be in touch shortly."
 
