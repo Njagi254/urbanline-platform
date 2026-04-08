@@ -1,0 +1,79 @@
+Good. Now let's create your first HTML file:
+
+```bash
+nano templates/index.html
+```
+
+Type this in exactly — don't worry about understanding every line yet, I'll explain as we go:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UrbanLine — Slingshot Rentals</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Experience the Road Differently</h1>
+    <p>Polaris Slingshot rentals in Auburn, WA. Book direct and save.</p>
+    <a href="#book" class="btn">Check Availability</a>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about">
+    <h2>Why UrbanLine</h2>
+    <p>We are a locally owned rental company based in Auburn, WA offering a unique three-wheeled Polaris Slingshot experience. Perfect for weekend adventures, special occasions, or just turning heads around the city.</p>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing">
+    <h2>Pricing</h2>
+    <div class="price-cards">
+      <div class="card">
+        <h3>Half Day</h3>
+        <p class="price">$150</p>
+        <p>Up to 4 hours</p>
+      </div>
+      <div class="card">
+        <h3>Full Day</h3>
+        <p class="price">$250</p>
+        <p>Up to 8 hours</p>
+      </div>
+      <div class="card">
+        <h3>Weekend</h3>
+        <p class="price">$400</p>
+        <p>Fri evening to Sun</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING FORM -->
+  <section class="book" id="book">
+    <h2>Request a Booking</h2>
+    <form action="/book" method="POST">
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email" required>
+      <input type="tel" name="phone" placeholder="Your phone number" required>
+      <input type="date" name="date" required>
+      <select name="duration">
+        <option value="half">Half Day</option>
+        <option value="full">Full Day</option>
+        <option value="weekend">Weekend</option>
+      </select>
+      <textarea name="message" placeholder="Anything else we should know?"></textarea>
+      <button type="submit">Send Request</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>UrbanLine LLC · Auburn, WA · urbanline@email.com</p>
+  </footer>
+
+</body>
+</html>
