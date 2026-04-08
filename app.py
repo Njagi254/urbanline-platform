@@ -1,9 +1,12 @@
 import smtplib
 import os
+import gspread
+from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
+from google.oauth2.service_account import Credentials
 
 load_dotenv()
 
@@ -11,6 +14,19 @@ app = Flask(__name__)
 
 GMAIL_USER = os.getenv('GMAIL_USER')
 GMAIL_PASSWORD = os.getenv('GMAIL_PASSWORD')
+GOOGLE_CREDENTIALS = os.getenv('GOOGLE_CREDENTIALS')
+GOOGLE_SHEET_ID = os.getenv('GOOGLE_SHEET_ID')
+
+def log_to_sheets(name, email, phone, date, duration, message):
+    scopes = [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive'
+    ]
+    creds = Credentials.from_service_account_file(GOOGLE_CREDENTIALS, scopes=scopes)
+    client = gspread.authorize(creds)
+    sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    sheet.append_row([name, email, phone, date, duration, message, timestamp])
 
 def send_email(name, email, phone, date, duration, message):
     msg = MIMEMultipart()
@@ -49,6 +65,7 @@ def book():
     message = request.form.get('message', '')
 
     send_email(name, email, phone, date, duration, message)
+    log_to_sheets(name, email, phone, date, duration, message)
 
     return "Thanks for your request! We will be in touch shortly."
 
