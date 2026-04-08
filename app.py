@@ -22,7 +22,10 @@ def log_to_sheets(name, email):
         'https://www.googleapis.com/auth/spreadsheets',
         'https://www.googleapis.com/auth/drive'
     ]
-    creds = Credentials.from_service_account_file(GOOGLE_CREDENTIALS, scopes=scopes)
+    import json
+    creds_json = os.getenv('GOOGLE_CREDENTIALS_JSON')
+    creds_dict = json.loads(creds_json)
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
