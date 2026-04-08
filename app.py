@@ -57,4 +57,4 @@ def book():
     return "You are on the list! We will be in touch when we launch."
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
